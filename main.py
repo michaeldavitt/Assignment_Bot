@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import datetime
 import openpyxl
+from keep_alive import keep_alive
+
 
 def days_till_due_calc(row):
   """Function to calculate the number of days until an assignemnt is due
@@ -59,4 +61,5 @@ async def on_message(message):
         # Print the message
         await message.channel.send(msg)
 
+keep_alive()
 client.run(TOKEN)
