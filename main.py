@@ -47,7 +47,9 @@ async def on_message(message):
     
     # Need to add a column for number of days until due
     df["Days_till_due"] = df.apply(lambda row: days_till_due_calc(row), axis = 1)
-    df = df.reset_index()
+
+    # Sort the dataframe rows by days until the assignment is due
+    df = df.sort_values(by = "Days_till_due")
 
     # Create an empty string for the message
     msg = ""
