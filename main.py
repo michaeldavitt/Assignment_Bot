@@ -49,6 +49,9 @@ async def on_message(message):
     df["Days_till_due"] = df.apply(lambda row: days_till_due_calc(row), axis = 1)
     df = df.reset_index()
 
+    # Create an empty string for the message
+    msg = ""
+
     # Go through the rows in the dataframe and print them to the channel
     for index, row in df.iterrows():
 
@@ -56,10 +59,10 @@ async def on_message(message):
       if row["Assignment"] != "nan" and row["Days_till_due"] != 365 and row["Days_till_due"] >= 0:
 
         # Construct the message using string concatenation
-        msg = str(row["Assignment"]) + " due in " + str(row["Days_till_due"]) + " days. Part of the module " + str(row["Module"] + ". Worth " + str(round(row["Percentage"] * 100)) + "% of the final grade.")
+        msg += str(row["Assignment"]) + " due in " + str(row["Days_till_due"]) + " days. Part of the module " + str(row["Module"] + ". Worth " + str(round(row["Percentage"] * 100)) + "% of the final grade.\n")
 
-        # Print the message
-        await message.channel.send(msg)
+    # Print the message
+    await message.channel.send(msg)
 
 keep_alive()
 client.run(TOKEN)
