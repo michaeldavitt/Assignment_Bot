@@ -15,7 +15,7 @@ def days_till_due_calc(row):
   """
 
   # When the exact date is not known, set it to 365
-  if type(row["Date"]) != datetime.datetime:
+  if type(row["Date"]) != pd._libs.tslibs.timestamps.Timestamp:
     return 365
 
   # Get the due date and todays date in the date format (without time)
@@ -61,9 +61,20 @@ async def on_message(message):
       if row["Assignment"] != "nan" and row["Days_till_due"] != 365 and row["Days_till_due"] >= 0:
 
         # Construct the message using string concatenation
-        msg += str(row["Assignment"]) + " due in " + str(row["Days_till_due"]) + " days. Part of the module " + str(row["Module"] + ". Worth " + str(round(row["Percentage"] * 100)) + "% of the final grade.\n")
+        new_msg = str(row["Assignment"]) + " due in " + str(row["Days_till_due"]) + " days. Part of the module " + str(row["Module"] + ". Worth " + str(round(row["Percentage"] * 100)) + "% of the final grade.\n\n")
 
-    # Print the message
+        # Split the message if the final message is over 2000 characters long
+        if len(msg + new_msg) > 2000:
+          # Send original message
+          await message.channel.send(msg)
+
+          # Assign the new message to the original message variable
+          msg = new_msg
+
+        # Add the new message onto the original message
+        msg += new_msg
+
+    # Print the final message/final message segment
     await message.channel.send(msg)
 
 keep_alive()
