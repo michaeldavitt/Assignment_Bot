@@ -9,9 +9,9 @@ from keep_alive import keep_alive
 def days_till_due_calc(row):
   """Function to calculate the number of days until an assignemnt is due
   
-  Check that the Date in the row provided is a datetime.datetime object
-  to_excel automatically converts dates into datetime.datetime objects
-  If it is not a datetime.datetime object, return 365 as the default
+  Check that the Date in the row provided is a Timestamp object
+  to_excel automatically converts dates into Timestamp objects
+  If it is not a Timestamp object, return 365 as the default
   """
 
   # When the exact date is not known, set it to 365
@@ -57,25 +57,26 @@ async def on_message(message):
     # Go through the rows in the dataframe and print them to the channel
     for index, row in df.iterrows():
 
-      # Don't print out the row if it is blank or if the due date is unknown
+      # Don't print out the row if it is blank, if days till due is unknown, or if the date is in the past
       if row["Assignment"] != "nan" and row["Days_till_due"] != 365 and row["Days_till_due"] >= 0:
 
         # Construct the message using string concatenation
         new_msg = str(row["Assignment"]) + " due in " + str(row["Days_till_due"]) + " days. Part of the module " + str(row["Module"] + ". Worth " + str(round(row["Percentage"] * 100)) + "% of the final grade.\n\n")
 
-        # Split the message if the final message is over 2000 characters long
+        # Split longer messages due to Discord's character limit
         if len(msg + new_msg) > 2000:
-          # Send original message
+          # Send a section of the message
           await message.channel.send(msg)
 
-          # Assign the new message to the original message variable
-          msg = new_msg
+          # Initialise the next message section
+          msg = ""
 
         # Add the new message onto the original message
         msg += new_msg
 
-    # Print the final message/final message segment
+    # Print the final message segment
     await message.channel.send(msg)
 
+# For keeping the bot running after I've turned off my machine
 keep_alive()
 client.run(TOKEN)
